@@ -22,9 +22,9 @@ const Accommodation = ({ themeStyles, destination }) => {
         const geoData = await geoResponse.json();
         
         if (geoData.lat && geoData.lon) {
-          // Then fetch hotels near these coordinates
+          // Then fetch accommodations near these coordinates using correct category
           const hotelsResponse = await fetch(
-            `https://api.opentripmap.com/0.1/en/places/radius?radius=5000&lon=${geoData.lon}&lat=${geoData.lat}&kinds=hotels&format=json&apikey=5ae2e3f221c38a28845f05b6e9b935af3e44df2f1c6cdb78d8772b27`
+            `https://api.opentripmap.com/0.1/en/places/radius?radius=5000&lon=${geoData.lon}&lat=${geoData.lat}&kinds=accomodations&format=json&apikey=5ae2e3f221c38a28845f05b6e9b935af3e44df2f1c6cdb78d8772b27`
           );
           const hotelsData = await hotelsResponse.json();
           
