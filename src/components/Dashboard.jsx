@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Components
 import StatusBar from './StatusBar2';
@@ -14,6 +14,24 @@ import BottomNavigation from './BottomNavigation';
 
 const Dashboard = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [tripData, setTripData] = useState({
+    destination: '',
+    duration: '',
+    travelingWith: ''
+  });
+
+  useEffect(() => {
+    // Retrieve data from localStorage
+    const destination = localStorage.getItem('destination');
+    const duration = localStorage.getItem('duration');
+    const travelingWith = localStorage.getItem('travelingWith');
+
+    setTripData({
+      destination,
+      duration,
+      travelingWith
+    });
+  }, []);
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
@@ -44,24 +62,26 @@ const Dashboard = () => {
           <Header toggleTheme={toggleTheme} isDarkMode={isDarkMode} themeStyles={themeStyles} />
           
           {/* Trip Card */}
-          <TripCard themeStyles={themeStyles} />
+          <TripCard themeStyles={themeStyles} tripData={tripData} />
           
           {/* Flight Details */}
-          <FlightDetails themeStyles={themeStyles} />
+          <FlightDetails themeStyles={themeStyles} destination={tripData.destination} />
           
           {/* Accommodation */}
-          <Accommodation themeStyles={themeStyles} />
+          <Accommodation themeStyles={themeStyles} destination={tripData.destination} />
           
           {/* Additional Accommodation */}
-          <AdditionalAccommodation themeStyles={themeStyles} />
-           {/* Activities Section */}
-        <Activities themeStyles={themeStyles} isDarkMode={isDarkMode} />
-        <DayPlan themeStyles={themeStyles} />
-{/* Popular Activities Section */}
-<PopularActivities themeStyles={themeStyles} />
+          <AdditionalAccommodation themeStyles={themeStyles} destination={tripData.destination} />
+          
+          {/* Activities Section */}
+          <Activities themeStyles={themeStyles} isDarkMode={isDarkMode} destination={tripData.destination} />
+          <DayPlan themeStyles={themeStyles} duration={tripData.duration} />
+          
+          {/* Popular Activities Section */}
+          <PopularActivities themeStyles={themeStyles} destination={tripData.destination} />
 
-{/* Bottom Navigation - Fixed */}
-<BottomNavigation isDarkMode={isDarkMode} themeStyles={themeStyles} />
+          {/* Bottom Navigation - Fixed */}
+          <BottomNavigation isDarkMode={isDarkMode} themeStyles={themeStyles} />
         </div>
       </div>
     </div>

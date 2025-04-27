@@ -1,6 +1,28 @@
 import React from 'react';
 
-const FlightDetails = ({ themeStyles }) => {
+const FlightDetails = ({ themeStyles, destination }) => {
+  // Helper function to get airport code from destination
+  const getAirportCode = (city) => {
+    const cityName = city ? city.split(',')[0].trim() : 'Tokyo';
+    // Simple mapping of some common cities to their airport codes
+    const airportCodes = {
+      'Tokyo': 'NRT',
+      'Paris': 'CDG',
+      'London': 'LHR',
+      'New York': 'JFK',
+      'Dubai': 'DXB',
+      'Singapore': 'SIN',
+      'Bangkok': 'BKK',
+      'Seoul': 'ICN'
+    };
+    return airportCodes[cityName] || cityName.substring(0, 3).toUpperCase();
+  };
+
+  // Get destination details
+  const destinationCity = destination ? destination.split(',')[0].trim() : 'Tokyo';
+  const destinationCountry = destination ? destination.split(',')[1]?.trim() : 'Japan';
+  const airportCode = getAirportCode(destinationCity);
+
   return (
     <div className="px-5 py-3">
       <div className="flex justify-between items-center mb-2">
@@ -64,13 +86,13 @@ const FlightDetails = ({ themeStyles }) => {
               className="text-xl font-bold"
               style={{ color: themeStyles.text }}
             >
-              NRT
+              {airportCode}
             </h3>
             <p
               className="text-xs opacity-80"
               style={{ color: themeStyles.secondaryText }}
             >
-              Narita, Tokyo
+              {destinationCity}, {destinationCountry}
             </p>
           </div>
         </div>

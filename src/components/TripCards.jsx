@@ -1,6 +1,32 @@
 import React from 'react';
 
-const TripCard = ({ themeStyles }) => {
+const TripCard = ({ themeStyles, tripData }) => {
+  // Calculate end date based on duration
+  const getEndDate = (duration) => {
+    const startDate = new Date('2025-01-27');
+    let days = 0;
+    
+    if (duration.includes('days')) {
+      days = parseInt(duration.split('-')[1]);
+    } else if (duration.includes('weeks')) {
+      const weeks = parseInt(duration.split('-')[1]);
+      days = weeks * 7;
+    }
+    
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + days);
+    return endDate.toLocaleDateString('en-GB', { 
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).replace(/\//g, '.');
+  };
+
+  const endDate = tripData.duration ? getEndDate(tripData.duration) : '02.02.2025';
+  const groupSize = tripData.travelingWith === 'Solo' ? '1' :
+                   tripData.travelingWith === 'Couple' ? '2' :
+                   tripData.travelingWith === 'Family' ? '4' : '4';
+
   return (
     <div className="px-5 py-3">
       <h2 className="text-lg font-semibold mb-2" style={{ color: themeStyles.text }}>Your Upcoming Trip</h2>
@@ -14,8 +40,10 @@ const TripCard = ({ themeStyles }) => {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/50 to-transparent"></div>
           <div className="absolute top-0 left-0 p-5 w-full">
-            <h3 className="text-4xl font-bold text-white tracking-wider">TOKYO</h3>
-            <p className="text-white text-sm mt-1">27.01.2025 - 02.02.2025</p>
+            <h3 className="text-4xl font-bold text-white tracking-wider">
+              {tripData.destination ? tripData.destination.split(',')[0].toUpperCase() : 'TOKYO'}
+            </h3>
+            <p className="text-white text-sm mt-1">27.01.2025 - {endDate}</p>
           </div>
           <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-1 rounded-full cursor-pointer">
             <i className="fas fa-arrow-up-right-from-square text-white"></i>
@@ -29,7 +57,9 @@ const TripCard = ({ themeStyles }) => {
             </div>
             <div>
               <p className="text-xs" style={{ color: themeStyles.secondaryText }}>Duration</p>
-              <p className="text-sm font-medium" style={{ color: themeStyles.text }}>8 Days</p>
+              <p className="text-sm font-medium" style={{ color: themeStyles.text }}>
+                {tripData.duration || '8 Days'}
+              </p>
             </div>
           </div>
           <div className="flex items-center">
@@ -38,7 +68,7 @@ const TripCard = ({ themeStyles }) => {
             </div>
             <div>
               <p className="text-xs" style={{ color: themeStyles.secondaryText }}>Group Size</p>
-              <p className="text-sm font-medium" style={{ color: themeStyles.text }}>4 (2M,2F)</p>
+              <p className="text-sm font-medium" style={{ color: themeStyles.text }}>{groupSize}</p>
             </div>
           </div>
           <div className="flex items-center">
