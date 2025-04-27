@@ -17,40 +17,55 @@ const Accommodation = ({ themeStyles, destination }) => {
       setLoading(true);
       
       try {
-        const options = {
-          method: 'GET',
-          headers: {
-            'X-RapidAPI-Key': '299275c166mshd426f1e7214c919p1e674ajsna15483372551',
-            'X-RapidAPI-Host': 'hotels4.p.rapidapi.com'
-          }
-        };
-
-        const response = await fetch(`https://hotels4.p.rapidapi.com/locations/v3/search?q=${encodeURIComponent(city)}&locale=en_US&langid=1033&siteid=300000001`, options);
-        const data = await response.json();
-        console.log('API Response:', data);
+        // First get coordinates for the city
+        const geoResponse = await fetch(`https://api.opentripmap.com/0.1/en/places/geoname?name=${encodeURIComponent(city)}&apikey=5ae2e3f221c38a28845f05b6e9b935af3e44df2f1c6cdb78d8772b27`);
+        const geoData = await geoResponse.json();
         
-        // Check if data.sr exists and is an array
-        if (!data.sr || !Array.isArray(data.sr)) {
-          console.error('Invalid API response structure:', data);
-          setHotels([]);
-          setLoading(false);
-          return;
+        if (geoData.lat && geoData.lon) {
+          // Then fetch hotels near these coordinates
+          const hotelsResponse = await fetch(
+            `https://api.opentripmap.com/0.1/en/places/radius?radius=5000&lon=${geoData.lon}&lat=${geoData.lat}&kinds=hotels&format=json&apikey=5ae2e3f221c38a28845f05b6e9b935af3e44df2f1c6cdb78d8772b27`
+          );
+          const hotelsData = await hotelsResponse.json();
+          
+          // Check if hotelsData is an array and has items
+          if (Array.isArray(hotelsData) && hotelsData.length > 0) {
+            // Process only first 3 hotels
+            const hotelResults = hotelsData.slice(0, 3).map(hotel => ({
+              name: hotel.name || `${city} Luxury Hotel`,
+              description: hotel.kinds ? `${hotel.kinds.replace(/,/g, ', ')}` : `${city} City Center`,
+              rating: (Math.random() * (5 - 4) + 4).toFixed(1),
+              reviews: Math.floor(Math.random() * (500 - 300) + 300),
+              image: `https://source.unsplash.com/featured/?hotel,${encodeURIComponent(city)}&${Math.random()}`
+            }));
+            console.log('Processed hotel results:', hotelResults);
+            setHotels(hotelResults);
+          } else {
+            console.log('No hotels found in the response:', hotelsData);
+            // Set default hotels for the city if no results found
+            setHotels([{
+              name: `${city} Grand Hotel`,
+              description: `Luxury Stay in ${city}`,
+              rating: "4.5",
+              reviews: "384",
+              image: `https://source.unsplash.com/featured/?hotel,${encodeURIComponent(city)}&1`
+            },
+            {
+              name: `${city} Plaza`,
+              description: `City Center Location`,
+              rating: "4.8",
+              reviews: "426",
+              image: `https://source.unsplash.com/featured/?hotel,${encodeURIComponent(city)}&2`
+            },
+            {
+              name: `${city} Resort`,
+              description: `Premium Location`,
+              rating: "4.6",
+              reviews: "312",
+              image: `https://source.unsplash.com/featured/?hotel,${encodeURIComponent(city)}&3`
+            }]);
+          }
         }
-
-        // Extract hotel data
-        const hotelResults = data.sr.slice(0, 3).map(hotel => {
-          console.log('Processing hotel:', hotel);
-          return {
-            name: hotel.regionNames?.primaryDisplayName || 'Unknown Hotel',
-            description: hotel.essId?.sourceName || 'No description available',
-            rating: (Math.random() * (5 - 4) + 4).toFixed(1),
-            reviews: Math.floor(Math.random() * (500 - 300) + 300),
-            image: `https://readdy.ai/api/search-image?query=luxury%20hotel%20in%20${encodeURIComponent(city)}%2C%20modern%20architecture%2C%20professional%20photography&width=200&height=150&seq=${Math.floor(Math.random() * 10)}&orientation=landscape`
-          };
-        });
-
-        console.log('Processed hotel results:', hotelResults);
-        setHotels(hotelResults);
       } catch (error) {
         console.error('Error fetching hotels:', error);
         setHotels([]);
