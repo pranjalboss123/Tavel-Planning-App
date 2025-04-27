@@ -23,3 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 .qodo
+
+# Environment variables
+.env
+.env.local
+.env.*.local

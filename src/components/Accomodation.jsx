@@ -18,13 +18,13 @@ const Accommodation = ({ themeStyles, destination }) => {
       
       try {
         // First get coordinates for the city
-        const geoResponse = await fetch(`https://api.opentripmap.com/0.1/en/places/geoname?name=${encodeURIComponent(city)}&apikey=5ae2e3f221c38a28845f05b6e9b935af3e44df2f1c6cdb78d8772b27`);
+        const geoResponse = await fetch(`https://api.opentripmap.com/0.1/en/places/geoname?name=${encodeURIComponent(city)}&apikey=${import.meta.env.VITE_OPENTRIP_API_KEY}`);
         const geoData = await geoResponse.json();
         
         if (geoData.lat && geoData.lon) {
           // Then fetch accommodations near these coordinates using correct category
           const hotelsResponse = await fetch(
-            `https://api.opentripmap.com/0.1/en/places/radius?radius=5000&lon=${geoData.lon}&lat=${geoData.lat}&kinds=accomodations&format=json&apikey=5ae2e3f221c38a28845f05b6e9b935af3e44df2f1c6cdb78d8772b27`
+            `https://api.opentripmap.com/0.1/en/places/radius?radius=5000&lon=${geoData.lon}&lat=${geoData.lat}&kinds=accomodations&format=json&apikey=${import.meta.env.VITE_OPENTRIP_API_KEY}`
           );
           const hotelsData = await hotelsResponse.json();
           

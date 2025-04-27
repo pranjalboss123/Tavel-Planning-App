@@ -15,7 +15,7 @@ const DestinationInput = ({ theme, destination, setDestination }) => {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(destination)}&key=1594e59a3bef449d9f09582dd06a8045&limit=5`
+          `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(destination)}&key=${import.meta.env.VITE_OPENCAGE_API_KEY}&limit=5`
         );
         const data = await response.json();
         
